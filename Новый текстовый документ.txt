@@ -1,0 +1,202 @@
+=========================================
+private double[] MethodSuccessiveApproximations(double[,] A, double[] B)
+        {
+            bool metka = false;
+            int k = 0;
+            int n = B.Length;
+            double[] X = new double[B.Length];
+            double[] Xk = new double[B.Length];
+            double g;
+            while (metka == false && k < 50)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    double s = 0;
+                    for (int j = 0; j < n; j++)
+                    {
+                        s = s + A[i, j] * X[j];
+                    }
+                    Xk[i] = X[i] - s + B[i];
+                }
+
+                metka = true;
+                for (int i = 0; i < n; i++)
+                {
+                    g = Math.Abs(Xk[i] - X[i]);
+                    if (Math.Abs(Xk[i]) > 1)
+                    {
+                        g = g / Math.Abs(Xk[i]);
+                    }
+                    if (g > epsylon)
+                    {
+                        metka = false;
+                    }
+                }
+                k = k + 1;
+                for (int j = 0; j < n; j++)
+                {
+                    X[j] = Xk[j];
+                }
+            }
+            if (k == iterationLimit)
+            {
+                Console.WriteLine("Not Running Together !!!");
+                return null;
+            }
+            else
+            {
+                return X;
+            }
+        }
+        private double[] MethodSimpleIteration(double[,] A, double[] B)
+        {
+            int n = B.Length;
+            double[] X = new double[n];
+            double[] TempX = new double[n];
+            double norm; // норма, определяемая как наибольшая разность компонент столбца иксов соседних итераций.
+            int counter = 0;
+            do
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    TempX[i] = -B[i];
+                    for (int g = 0; g < n; g++)
+                    {
+                        if (i != g)
+                        {
+                            TempX[i] += A[i, g] * X[g];
+                        }
+                    }
+                    TempX[i] /= -A[i, i];
+                }
+                norm = Math.Abs(X[0] - TempX[0]);
+                for (int h = 0; h < n; h++)
+                {
+                    if (Math.Abs(X[h] - TempX[h]) > norm)
+                    {
+                        norm = Math.Abs(X[h] - TempX[h]);
+                    }
+                    X[h] = TempX[h];
+                }
+                counter++;
+            }
+            while (norm > epsylon && counter < iterationLimit);
+            if (counter == iterationLimit)
+            {
+                Console.WriteLine("Not Running Together !!!");
+                return null;
+            }
+            else
+            {
+                return X;
+            }
+        }
+        private double[] MethodZeydel(double[,] A, double[] B)
+        {
+            int n = B.Length;
+            int counter = 0;
+            double[] X = new double[n];
+            double[] Xk = new double[n];
+
+            bool exitParam = true;
+            do
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    double var = 0;
+                    for (int j = 0; j < n; j++)
+                        if (j != i) var += (A[i, j] * X[j]);
+                    Xk[i] = X[i];
+                    X[i] = (B[i] - var) / A[i, i];
+                }
+
+                exitParam = true;
+                for (int i = 0; i < n; i++)
+                {
+                    if (Math.Abs(X[i] - Xk[i]) >= epsylon)
+                    {
+                        exitParam = false;
+                    }
+                }
+                counter++;
+
+            }
+            while (!(exitParam) && counter < iterationLimit);
+            if (counter == iterationLimit)
+            {
+                Console.WriteLine("Not Running Together !!!");
+                return null;
+            }
+            else
+            {
+                return X;
+            }
+        }
+        private double[] MethodNekrasov(double[,] A, double[] B)
+        {
+            int n = B.Length;
+            double[] X = new double[n];
+            double[] Xk = new double[n];
+            int counter=0;
+            bool exitParam = true;
+            do
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    double s1 = 0;
+                    for (int j = 0; j < i; j++)
+                    {
+                        s1 = s1 + A[i, j] * X[j];
+                    }
+                    double s2 = 0;
+                    for (int l = i + 1; l < n; l++)
+                    {
+                        s2 = s2 + A[i, l] * Xk[l];
+                    }
+                    X[i] = 1.0 / A[i, i] * (B[i] - s1 - s2);
+                }
+
+                exitParam = true;
+                for (int i = 0; i < n; i++)
+                {
+                    if (Math.Abs(X[i] - Xk[i]) >= epsylon)
+                    {
+                        exitParam = false;
+                    }
+                }
+                counter++;
+                for (int i = 0; i < n; i++)
+                {
+                    Xk[i] = X[i];
+                }             
+            }
+            while (!(exitParam) && counter < iterationLimit);
+            if (counter == iterationLimit)
+            {
+                Console.WriteLine("Not Running Together !!!");
+                return null;
+            }
+            else
+            {
+                return X;
+            }
+        }
+		  
+		  
+		  
+private double[] Nevyazka(double[,] A, double[] B,double[] X)
+        {
+            int n=B.Length;
+            double[] Nev = new double[n];
+            double s = 0;
+            for (int i = 0; i < n; i++)
+            {
+                s = 0;
+                for (int j = 0; j < n; j++)
+                {
+                    s = s + A[i, j] * X[j];
+                }
+                Nev[i] = s - B[i];
+            }
+            return Nev;
+        }
